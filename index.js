@@ -42,9 +42,18 @@ app.post("/send-email", async (req, res) => {
     secure: true,
     auth: {
       user: EMAIL_SERVER_USER,
-      pass: EMAIL_SERVER_PASSWORD, // This should be your Zoho app-specific password
+      pass: EMAIL_SERVER_PASSWORD,
     },
   });
+
+  // ✅ SMTP verification block
+  try {
+    await transporter.verify();
+    console.log("SMTP connection verified successfully.");
+  } catch (smtpError) {
+    console.error("[SMTP VERIFY ERROR]", smtpError);
+    return res.status(500).json({ success: false, message: "SMTP verification failed", error: smtpError.message });
+  }
 
   const mailToAdmin = {
     from: `"${fullName}" <${EMAIL_SERVER_USER}>`,
@@ -84,7 +93,11 @@ app.post("/send-email", async (req, res) => {
     return res.status(200).json({ success: true, message: "Message sent successfully!" });
   } catch (error) {
     console.error("[EMAIL_SERVER_ERROR]", error);
-    return res.status(500).json({ success: false, message: "Failed to send email." });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send email.",
+      error: error.message, // ✅ Return actual error to frontend for visibility
+    });
   }
 });
 
