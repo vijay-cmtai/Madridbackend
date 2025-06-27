@@ -3,13 +3,12 @@ import nodemailer from "nodemailer";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
-// ESM me __dirname nahi hota, isliye yeh workaround zaroori hai
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,10 +37,12 @@ app.post("/send-email", async (req, res) => {
   }
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
       user: EMAIL_SERVER_USER,
-      pass: EMAIL_SERVER_PASSWORD,
+      pass: EMAIL_SERVER_PASSWORD, // This should be your Zoho app-specific password
     },
   });
 
